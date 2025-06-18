@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLinicaXPTO_", "CLinicaXPTO_\CLinicaXPTO_.csproj", "{FF794BF4-007E-4FFD-9854-5EB846CF631B}"
 EndProject
@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLinicaXPTO.DAL", "ClinicaX
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLinicaXPTO.DTO", "CLinicaXPTO.DTO\CLinicaXPTO.DTO.csproj", "{62E55EBA-629D-48CE-A510-C33D86FD268B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLinicaXPTO.Interface", "CLinicaXPTO.Interface\CLinicaXPTO.Interface.csproj", "{60E51747-5B20-49C9-A6D4-2980977294CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLinicaXPTO.Share", "CLinicaXPTO.Interface\CLinicaXPTO.Share.csproj", "{60E51747-5B20-49C9-A6D4-2980977294CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLinicaXPTO.Model", "CLinicaXPTO.Model\CLinicaXPTO.Model.csproj", "{3B3556F7-AA1D-4D30-844D-7014B908C1EF}"
 EndProject

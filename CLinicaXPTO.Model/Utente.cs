@@ -22,7 +22,7 @@ namespace CLinicaXPTO.Model
         public string Morada { get; set; }
         [Required]
         public string Password { get; set; }
-        [Required]
+       [Required]
         public TipoUtilizador Tipo { get; set; } = TipoUtilizador.ANONIMO;
         public List<PedidoMarcacao>? Pedidos { get; set; } = new List<PedidoMarcacao>();
 

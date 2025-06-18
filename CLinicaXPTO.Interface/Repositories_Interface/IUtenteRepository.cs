@@ -17,5 +17,7 @@ namespace CLinicaXPTO.Interface.Repositories_Interface
         Task<Utente> UpdateUtente(Utente utente);
         Task<bool> RemoverUtente(int idUtente);
         Task<bool> RemoverUtente(string email);
+        Task<bool> RemoverUtente_ID(int id);
+
     }
 }

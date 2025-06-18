@@ -105,6 +105,11 @@ namespace CLinicaXPTO.Services
         {
             return await _utenteRepository.RemoverUtente(email);
         }
+        public async Task<bool> RemoverUtente_ID(int id)
+        {
+            return await _utenteRepository.RemoverUtente_ID(id);
+
+        }
 
         public async Task<UtenteDTO> UpdateUtente(UtenteDTO utenteAtualizado)
         {
@@ -137,5 +142,6 @@ namespace CLinicaXPTO.Services
             return MapToDTO(utenteExistente);
         }
 
+      
     }
 }

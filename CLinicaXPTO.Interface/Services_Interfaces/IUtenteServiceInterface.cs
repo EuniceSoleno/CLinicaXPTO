@@ -18,5 +18,6 @@ namespace CLinicaXPTO.Interface.Services_Interfaces
         Task<UtenteDTO> UpdateUtente(UtenteDTO utente);
         Task<bool> RemoverUtente(int idUtente);
         Task<bool> RemoverUtente(string nome);
+        Task<bool> RemoverUtente_ID(int id);
     }
 }

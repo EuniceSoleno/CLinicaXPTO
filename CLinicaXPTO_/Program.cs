@@ -4,6 +4,8 @@ using CLinicaXPTO.Interface.Repositories_Interface;
 using CLinicaXPTO.Interface.Services_Interfaces;
 using CLinicaXPTO.Services;
 using Microsoft.EntityFrameworkCore;
+using CLinicaXPTO.Share.Repositories_Interface;
+using CLinicaXPTO.Share.Services_Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,18 @@ builder.Services.AddDbContext<CLinicaXPTODBContext>(options =>
 
 builder.Services.AddScoped<IUtenteRepository, UtenteRepository>();
 builder.Services.AddScoped<IUtenteServiceInterface, UtenteService>();
+
+builder.Services.AddScoped<IPedidoMarcacaoRepository,PedidoMarcacaoRepository>();
+builder.Services.AddScoped<IPedidoMarcacaoService, PedidoMarcacaoService>();
+
+builder.Services.AddScoped<IActoClinicoRepository, ActoClinicoRepository>();
+builder.Services.AddScoped<IActoClinicoService,ActoClinicoService>();
+
+builder.Services.AddScoped<IProfissionalRepository, ProfissionalRepository>();
+builder.Services.AddScoped<IProfissionalService, ProfissionalService>();
+
+builder.Services.AddScoped<IUtenteNaoRegistadoRepository,UtenteNaoRegistadoRepository>();
+builder.Services.AddScoped<IUtenteNaoRegistadoService, UtenteNaoRegistadoService>();
 
 var app = builder.Build();
 

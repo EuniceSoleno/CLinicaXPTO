@@ -11,7 +11,7 @@ namespace CLinicaXPTO_.Controllers
     [Route("[controller]")]
     public class UtenteController : ControllerBase
     {
-        public readonly IUtenteServiceInterface _utenteServiceInterface;
+        private readonly IUtenteServiceInterface _utenteServiceInterface;
         public UtenteController(IUtenteServiceInterface utenteServiceInterface)
         {
             _utenteServiceInterface = utenteServiceInterface;
@@ -66,10 +66,10 @@ namespace CLinicaXPTO_.Controllers
         public async Task<ActionResult<UtenteDTO>> ActualizarUtente([FromBody] UtenteDTO utenteAtualizado)
         {
             var utenteExistente = await _utenteServiceInterface.UpdateUtente(utenteAtualizado);
-            if (utenteAtualizado == null)
+            if (utenteExistente == null)
                 return NotFound("Utente não encontrado para atualização.");
 
-            return Ok(utenteAtualizado);
+            return Ok(utenteExistente);
         }
 
         [HttpGet("listar_utentes")]
@@ -85,6 +85,15 @@ namespace CLinicaXPTO_.Controllers
             var removido = await _utenteServiceInterface.RemoverUtente(email);
             if (!removido)
                 return NotFound($"Utente com email '{email}' não encontrado.");
+
+            return NoContent();
+        }
+        [HttpDelete("remover_pelo_id")]
+        public async Task<ActionResult<UtenteDTO>> RemoverPeloId(int id)
+        {
+            var removido = await _utenteServiceInterface.RemoverUtente_ID(id);
+            if (!removido)
+                return NotFound($"Utente com id '{id}' não encontrado.");
 
             return NoContent();
         }

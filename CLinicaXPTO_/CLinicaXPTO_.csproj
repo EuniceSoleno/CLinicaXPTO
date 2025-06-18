@@ -23,7 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ClinicaXPTO.DAL\CLinicaXPTO.DAL.csproj" />
     <ProjectReference Include="..\CLinicaXPTO.DTO\CLinicaXPTO.DTO.csproj" />
-    <ProjectReference Include="..\CLinicaXPTO.Interface\CLinicaXPTO.Interface.csproj" />
+    <ProjectReference Include="..\CLinicaXPTO.Interface\CLinicaXPTO.Share.csproj" />
     <ProjectReference Include="..\CLinicaXPTO.Model\CLinicaXPTO.Model.csproj" />
     <ProjectReference Include="..\CLinicaXPTO.Services\CLinicaXPTO.Services.csproj" />
   </ItemGroup>

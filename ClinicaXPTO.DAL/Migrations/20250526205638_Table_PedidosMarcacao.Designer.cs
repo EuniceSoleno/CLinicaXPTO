@@ -4,6 +4,7 @@ using ClinicaXPTO.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CLinicaXPTO.DAL.Migrations
 {
     [DbContext(typeof(CLinicaXPTODBContext))]
-    partial class CLinicaXPTODBContextModelSnapshot : ModelSnapshot
+    [Migration("20250526205638_Table_PedidosMarcacao")]
+    partial class Table_PedidosMarcacao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,22 +36,11 @@ namespace CLinicaXPTO.DAL.Migrations
                     b.Property<int>("PedidoMarcacaoId")
                         .HasColumnType("int");
 
-                    b.Property<string>("_Subsistema")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("_TipoConsulta")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("idProfissional")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("PedidoMarcacaoId");
 
-                    b.ToTable("Actos");
+                    b.ToTable("ActoClinico");
                 });
 
             modelBuilder.Entity("CLinicaXPTO.Model.PedidoMarcacao", b =>
@@ -84,27 +76,6 @@ namespace CLinicaXPTO.DAL.Migrations
                     b.HasIndex("UtenteId");
 
                     b.ToTable("Pedidos");
-                });
-
-            modelBuilder.Entity("CLinicaXPTO.Model.Profissional", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Especialidade")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NomeCompleto")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("profissionais");
                 });
 
             modelBuilder.Entity("CLinicaXPTO.Model.Utente", b =>
@@ -154,58 +125,26 @@ namespace CLinicaXPTO.DAL.Migrations
                     b.ToTable("Utentes");
                 });
 
-            modelBuilder.Entity("CLinicaXPTO.Model.UtenteNaoRegistado", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("DataNascimento")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Genero")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Morada")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NomeCompleto")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Telemovel")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("utentesNaoRegistados");
-                });
-
             modelBuilder.Entity("CLinicaXPTO.Model.ActoClinico", b =>
                 {
-                    b.HasOne("CLinicaXPTO.Model.PedidoMarcacao", null)
+                    b.HasOne("CLinicaXPTO.Model.PedidoMarcacao", "Pedido")
                         .WithMany("ActosClinicos")
                         .HasForeignKey("PedidoMarcacaoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Pedido");
                 });
 
             modelBuilder.Entity("CLinicaXPTO.Model.PedidoMarcacao", b =>
                 {
-                    b.HasOne("CLinicaXPTO.Model.Utente", null)
+                    b.HasOne("CLinicaXPTO.Model.Utente", "Utente")
                         .WithMany("Pedidos")
                         .HasForeignKey("UtenteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Utente");
                 });
 
             modelBuilder.Entity("CLinicaXPTO.Model.PedidoMarcacao", b =>

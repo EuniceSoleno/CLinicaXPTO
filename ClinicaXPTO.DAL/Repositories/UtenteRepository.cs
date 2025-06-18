@@ -17,7 +17,7 @@ namespace CLinicaXPTO.DAL.Repositories
         public async Task<Utente> Buscar_Email(string email)
         {
             return await _dbContext.Utentes.Include(u => u.Pedidos)
-                 .FirstOrDefaultAsync(u => u.Email == email);
+                 .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
         }
 
         public async Task<Utente> Buscar_Id(int idUtente)
@@ -49,6 +49,7 @@ namespace CLinicaXPTO.DAL.Repositories
                 Telemovel = u.Telemovel,
                 Email = u.Email,
                 Morada = u.Morada,
+                Pedidos = u.Pedidos,
             }).ToList();
         }
 
@@ -68,6 +69,18 @@ namespace CLinicaXPTO.DAL.Repositories
         {
             var utente = await Buscar_Email(email);
             if(utente != null)
+            {
+                _dbContext.Utentes.Remove(utente);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> RemoverUtente_ID(int id)
+        {
+            var utente = await Buscar_Id(id);
+            if (utente != null)
             {
                 _dbContext.Utentes.Remove(utente);
                 await _dbContext.SaveChangesAsync();
