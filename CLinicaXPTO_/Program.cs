@@ -34,6 +34,9 @@ builder.Services.AddScoped<IProfissionalService, ProfissionalService>();
 builder.Services.AddScoped<IUtenteNaoRegistadoRepository,UtenteNaoRegistadoRepository>();
 builder.Services.AddScoped<IUtenteNaoRegistadoService, UtenteNaoRegistadoService>();
 
+builder.Services.AddScoped<ITabelaHorarioRepository,TabelaHorarioRepository>();
+builder.Services.AddScoped<ITabelaHorarioService,TabelaHorarioService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

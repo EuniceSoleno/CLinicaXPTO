@@ -53,6 +53,12 @@ namespace CLinicaXPTO.DAL.Repositories
                 .FirstOrDefaultAsync(u => u.Id == idProfissional);
         }
 
+        public async Task<Profissional> BuscarProfissionalNome(string profissionalNome)
+        {
+            return await _dbContext.profissionais
+                .FirstOrDefaultAsync(u => u.NomeCompleto.Equals(profissionalNome));
+        }
+
         public async Task<Profissional> EliminarProfissional(int idProfissional)
         {
             try

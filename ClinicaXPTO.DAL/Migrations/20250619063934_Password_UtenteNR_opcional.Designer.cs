@@ -4,6 +4,7 @@ using ClinicaXPTO.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CLinicaXPTO.DAL.Migrations
 {
     [DbContext(typeof(CLinicaXPTODBContext))]
-    partial class CLinicaXPTODBContextModelSnapshot : ModelSnapshot
+    [Migration("20250619063934_Password_UtenteNR_opcional")]
+    partial class Password_UtenteNR_opcional
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,7 +51,7 @@ namespace CLinicaXPTO.DAL.Migrations
 
                     b.HasIndex("PedidoMarcacaoId");
 
-                    b.ToTable("Actos", (string)null);
+                    b.ToTable("Actos");
                 });
 
             modelBuilder.Entity("CLinicaXPTO.Model.PedidoMarcacao", b =>
@@ -76,14 +79,14 @@ namespace CLinicaXPTO.DAL.Migrations
                     b.Property<string>("Observacoes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UtenteId")
+                    b.Property<int>("UtenteId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UtenteId");
 
-                    b.ToTable("Pedidos", (string)null);
+                    b.ToTable("Pedidos");
                 });
 
             modelBuilder.Entity("CLinicaXPTO.Model.Profissional", b =>
@@ -104,7 +107,7 @@ namespace CLinicaXPTO.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("profissionais", (string)null);
+                    b.ToTable("profissionais");
                 });
 
             modelBuilder.Entity("CLinicaXPTO.Model.Utente", b =>
@@ -151,7 +154,7 @@ namespace CLinicaXPTO.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Utentes", (string)null);
+                    b.ToTable("Utentes");
                 });
 
             modelBuilder.Entity("CLinicaXPTO.Model.UtenteNaoRegistado", b =>
@@ -190,7 +193,7 @@ namespace CLinicaXPTO.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("utentesNaoRegistados", (string)null);
+                    b.ToTable("utentesNaoRegistados");
                 });
 
             modelBuilder.Entity("CLinicaXPTO.Model.ActoClinico", b =>
@@ -206,7 +209,9 @@ namespace CLinicaXPTO.DAL.Migrations
                 {
                     b.HasOne("CLinicaXPTO.Model.Utente", null)
                         .WithMany("Pedidos")
-                        .HasForeignKey("UtenteId");
+                        .HasForeignKey("UtenteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CLinicaXPTO.Model.PedidoMarcacao", b =>

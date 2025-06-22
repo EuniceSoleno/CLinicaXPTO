@@ -17,7 +17,6 @@ namespace CLinicaXPTO.Model
         public int PedidoMarcacaoId {  get; set; }
         [Required]
         [JsonConverter(typeof(JsonStringEnumConverter))]
-
         public TipoConsulta _TipoConsulta { get; set; }
         [Required]
         [JsonConverter(typeof(JsonStringEnumConverter))]

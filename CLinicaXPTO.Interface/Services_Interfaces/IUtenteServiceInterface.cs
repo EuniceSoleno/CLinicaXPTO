@@ -19,5 +19,7 @@ namespace CLinicaXPTO.Interface.Services_Interfaces
         Task<bool> RemoverUtente(int idUtente);
         Task<bool> RemoverUtente(string nome);
         Task<bool> RemoverUtente_ID(int id);
+        Task<UtenteDTO> ConverterDeNaoRegistadoAsync(int utenteNaoRegistadoId);
+
     }
 }

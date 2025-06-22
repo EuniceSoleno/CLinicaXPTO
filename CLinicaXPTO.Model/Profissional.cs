@@ -18,5 +18,7 @@ namespace CLinicaXPTO.Model
         [Required]
         public string Especialidade { get; set; } = string.Empty;
 
+        public ICollection<TabelaDeHorario> TabelaDeHorario { get; set; }
+
     }
 }

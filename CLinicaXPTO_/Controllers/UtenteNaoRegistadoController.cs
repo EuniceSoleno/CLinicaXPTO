@@ -33,12 +33,12 @@ namespace CLinicaXPTO_.Controllers
         {
             var utente = await _service.BuscarUentente(id);
             if (utente == null)
-                return NotFound();
+                return BadRequest("Utente não Encontrado");
 
             return Ok(utente);
         }
 
-        // ✅ GET: api/UtenteNaoRegistado
+        // GET: api/UtenteNaoRegistado
         [HttpGet]
         public async Task<ActionResult<List<UtenteNaoRegistadoDTO>>> GetTodos()
         {

@@ -8,6 +8,8 @@ using CLinicaXPTO.DTO;
 using CLinicaXPTO.Interface.Repositories_Interface;
 using CLinicaXPTO.Interface.Services_Interfaces;
 using CLinicaXPTO.Model;
+using CLinicaXPTO.Model.Enumerados;
+using CLinicaXPTO.Share.Repositories_Interface;
 
 namespace CLinicaXPTO.Services
 {
@@ -15,14 +17,27 @@ namespace CLinicaXPTO.Services
     {
         private readonly IPedidoMarcacaoRepository _marcacaoRepository;
         private readonly IUtenteRepository _utenteRepository;
-        public PedidoMarcacaoService(IPedidoMarcacaoRepository marcacaoRepository, IUtenteRepository utenteRepository)
-        {
+        private readonly IUtenteNaoRegistadoRepository _utenteNaoRegistadoRepository;
+        private readonly ITabelaHorarioRepository _tabelaHorarioRepository;
+        private readonly IProfissionalRepository _profissionalRepository;
+
+        public PedidoMarcacaoService(
+        IPedidoMarcacaoRepository marcacaoRepository,
+        IUtenteRepository utenteRepository,
+        IUtenteNaoRegistadoRepository utenteNaoRegistadoRepository,
+        ITabelaHorarioRepository tabelaHorarioRepository,
+        IProfissionalRepository profissionalRepository)
+            {
             _marcacaoRepository = marcacaoRepository;
             _utenteRepository = utenteRepository;
+            _utenteNaoRegistadoRepository = utenteNaoRegistadoRepository;
+            _tabelaHorarioRepository = tabelaHorarioRepository;
+            _profissionalRepository = profissionalRepository;
         }
 
         public async Task<PedidoMarcacaoDTO> ActualizarMarcacao(PedidoMarcacaoDTO pedidoMarcacaoDTO)
         {
+            //Repartir a actualização da Marcação
             //verificar se o id é válido
             if (pedidoMarcacaoDTO.Id <= 0)
                 throw new ArgumentException("ID da marcacao inválido");
@@ -32,7 +47,7 @@ namespace CLinicaXPTO.Services
                 throw new InvalidOperationException($"Marcacao comId {pedidoMarcacaoDTO.Id} não encontrada");
 
             //verificar se o Utente existe
-            var utente = await _utenteRepository.Buscar_Id(pedidoMarcacaoDTO.UtenteId);
+            var utente = await _utenteRepository.Buscar_Id(pedidoMarcacaoDTO.UtenteId ?? 0);
             if (utente == null)
                 throw new InvalidOperationException($"Utente com o Id {pedidoMarcacaoDTO.UtenteId} não encontrado");
 
@@ -45,6 +60,68 @@ namespace CLinicaXPTO.Services
 
             //Mapear para DTO
             return MapToDTO(marcacaoActualizada);
+
+        }
+
+        public async Task<bool> AgendarMarcacao(int idMarcacao)
+        {
+            //Buscar Marcacao
+            var marcacao = await _marcacaoRepository.BuscarMarcacao(idMarcacao);
+            if(marcacao == null)
+                throw new Exception("Marcacao não encontrada");
+
+            //Verificar se é uma solicitaçao de Utente Registado
+            if (marcacao.UtenteId == null)
+                throw new Exception("So é permitido agendar Macação de utentes Registados");
+
+
+            //validar intervalo de datas, maximo de 3 dias permitidos
+            var diferenca = marcacao.DataFim.DayNumber - marcacao.DataInicio.DayNumber;
+            if (diferenca > 3)
+                throw new ArgumentException("Só é permitido solicitar num intervalo de até 3 dias");
+
+            //Buscar todos os profissionais e seus horarios
+            var profissionais = await _profissionalRepository.ListarProfissionai();
+            if (profissionais == null || profissionais.Count == 0)
+                throw new Exception("Nenhum Profissional Registado");
+
+            DateTime? dataAgendada = null;
+            Profissional? profissionalSelecionado = null;
+            foreach(var profissional in profissionais)
+            {
+                var horario = await _tabelaHorarioRepository.BuscarPorProfissionalId(profissional.Id);
+                if (horario == null)
+                    continue;
+
+                //Procurar uma data disponivel dentro do intervalo solicitado
+                for (var data = marcacao.DataInicio; data <= marcacao.DataFim; data = data.AddDays(1))
+                {
+                    var diaSemana = data.DayOfWeek;
+
+                    //verificar se o Profissional trabalha nesse dia
+                    if (!horario.DiasSemana.Contains(diaSemana))
+                        continue;
+
+                    //verificar se o horario solicitado está dentro do horario do profissional
+                    if(marcacao.HorarioSolicitado >= horario.HoraInicio && marcacao.HorarioSolicitado <= horario.HoraInicio)
+                    {
+                        profissionalSelecionado = profissional;
+                        var horarioSolicitado = TimeOnly.FromTimeSpan(marcacao.HorarioSolicitado);
+                        dataAgendada = data.ToDateTime(marcacao.horarioSolicitado);
+                        break;
+
+                    }
+                }
+                if(profissionalSelecionado != null && dataAgendada != null) 
+                    break;
+            }
+            //Actualizar a marcacao
+            marcacao.EstadoMarcacao = EstadoMarcacao.AGENDADO;
+            marcacao.DataAgendada = dataAgendada;
+
+            var resultado = await _marcacaoRepository.ActualizarMarcacao(marcacao);
+            return resultado != null;
+
 
         }
 
@@ -93,7 +170,6 @@ namespace CLinicaXPTO.Services
             {
                 throw new Exception($"Erro ao eliminar Marcacao");
             }
-            throw new NotImplementedException();
         }
 
         public async Task<List<PedidoMarcacaoDTO>> ListarMarcacoes()
@@ -110,11 +186,57 @@ namespace CLinicaXPTO.Services
 
             }
         }
+        public async Task<List<PedidoMarcacaoDTO>> ListarMarcacoesDeUtentesNaoRegistados()
+        {
+            var marcacoes = await _marcacaoRepository.ListarMarcacoes();
+            var filtradas = marcacoes
+                .Where(m => m.UtenteId == null)
+                .Select(MapToDTO)
+                .ToList();
+
+            return filtradas;
+            
+        }
+
+        public async Task<List<PedidoMarcacaoDTO>> ListarMarcacoesDeUtentesRegistados()
+        {
+            var marcacoes = await _marcacaoRepository.ListarMarcacoes();
+            var filtradas = marcacoes
+                .Where(m => m.UtenteId != null)
+                .Select(MapToDTO)
+                .ToList();
+            return filtradas;
+        }
+
+        public async Task<bool> RealizarMarcacao(int idMarcacao)
+        {
+            if (idMarcacao == 0)
+                throw new ArgumentException("O ID da Marcacao deve ser maior que zero");
+
+            //Buscar a marcacao no Banco de Dados
+            var marcacao = await _marcacaoRepository.BuscarMarcacao(idMarcacao);
+            if (marcacao == null) throw new ArgumentException("Marcacao não encontrada");
+
+            //Verificar se a marcacao já foi agengada
+            if (marcacao.EstadoMarcacao == EstadoMarcacao.REALIZADO)
+                throw new ArgumentException("A Marcacao já foi realizada");
+
+            //actualizar o estado da Macacao
+            if(marcacao.EstadoMarcacao == EstadoMarcacao.AGENDADO)
+                marcacao.EstadoMarcacao = EstadoMarcacao.REALIZADO;
+
+            //Salvar as alterações Feitas
+            var realizado = await _marcacaoRepository.ActualizarMarcacao(marcacao);
+            return realizado != null;
+
+        }
+
+        //O metodo registar Marcacao não sera utilizado!
 
         public async Task<PedidoMarcacaoDTO> RegistrarMarcacao(PedidoMarcacaoDTO marcacaoDTO)
         {
             //Buscar o Utente
-            var utente = await _utenteRepository.Buscar_Id(marcacaoDTO.UtenteId);
+            var utente = await _utenteRepository.Buscar_Id(marcacaoDTO.UtenteId ?? 0);
             if (utente == null) throw new InvalidOperationException($"Utente com ID{marcacaoDTO
                 ?.UtenteId} não encontrado");
 
@@ -124,22 +246,51 @@ namespace CLinicaXPTO.Services
             return MapToDTO(marcacaoRegistada);
         }
 
+        public async Task<PedidoMarcacaoDTO> RegistrarMarcacaoNaoRegistado(PedidoMarcacaNaoRegistadoDTO dto)
+        {
+        
+            // Criar e guardar o utente não registado
+            var utenteNR = new UtenteNaoRegistado
+            {
+                NomeCompleto = dto.NomeCompleto,
+                DataNascimento = dto.DataNascimento,
+                Genero = dto.Genero,
+                Telemovel = dto.Telemovel,
+                Email = dto.Email,
+                Morada = dto.Morada
+            };
+
+            var utenteCriado = await _utenteNaoRegistadoRepository.AdicionarUtente(utenteNR);
+
+            // Criar e guardar o pedido de marcação do  utente não registado
+            var pedido = new PedidoMarcacao
+            {
+                EstadoMarcacao = dto.EstadoMarcacao,
+                Observacoes = dto.Observacoes,
+                DataPedido = dto.DataPedido,
+                ActosClinicos = dto.ActosClinicos?.ToList() ?? new List<ActoClinico>(),
+                DataAgendada = dto.DataAgendada
+
+            };
+
+            var marcacaoCriada = await _marcacaoRepository.RegistrarMarcacao(pedido);
+
+            return MapToDTO(marcacaoCriada);
+
+        }
+
         private PedidoMarcacaoDTO MapToDTO(PedidoMarcacao model)
         {
             if (model == null) return null;
 
             return new PedidoMarcacaoDTO
             {
-                Id = model.Id,
-                UtenteId = model.UtenteId,
-                //O utente já possui um MapToDTO
-                //Mas não sei como chamar aqui
-               /* UtenteDTO = */
+               Id = model.Id,
+               UtenteId = model.UtenteId,
                EstadoMarcacao = model.EstadoMarcacao,
                ActosClinicos = model.ActosClinicos?.ToList()?? new List<ActoClinico>(),
                DataAgendada = model.DataAgendada,
                DataPedido = model.DataPedido,
-               IntervaloData = model.IntervaloData,
                Observacoes = model.Observacoes
 
             };
@@ -149,10 +300,9 @@ namespace CLinicaXPTO.Services
         {
             var model = modeloExistente ?? new PedidoMarcacao();
             model.Id = dto.Id;
-            model.UtenteId= dto.UtenteId;
+            model.UtenteId= dto.UtenteId ?? 0;
             model.EstadoMarcacao= dto.EstadoMarcacao;
             model.DataAgendada = dto.DataAgendada;
-            model.IntervaloData = dto.IntervaloData;
             model.Observacoes= dto.Observacoes;
 
             if (modeloExistente == null)

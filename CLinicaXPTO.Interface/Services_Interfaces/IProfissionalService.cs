@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CLinicaXPTO.DTO;
+using CLinicaXPTO.Model;
 
 namespace CLinicaXPTO.Share.Services_Interfaces
 {
@@ -12,7 +13,10 @@ namespace CLinicaXPTO.Share.Services_Interfaces
         Task<List<ProfissionalDTO>> ListarProfissional();
         Task<ProfissionalDTO> AdicionarProficional(ProfissionalDTO profifionalDTO);
         Task<ProfissionalDTO> BuscarProfissional(int idProficional);
+        Task<ProfissionalDTO> BuscarProfissionalNome(string profissionalNome);
+
         Task<ProfissionalDTO> ElieminarProfissional(int idProficional);
         Task<ProfissionalDTO> ActualizarProfissional(ProfissionalDTO profifionalDTO);
+
     }
 }

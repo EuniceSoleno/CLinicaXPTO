@@ -33,6 +33,7 @@ namespace CLinicaXPTO.Services
                 Email = dto.Email,
                 Telemovel = dto.Telemovel,
                 Morada = dto.Morada,
+                //Password = "senha1234",
 
 
             };
@@ -46,7 +47,8 @@ namespace CLinicaXPTO.Services
                 Genero = dto.Genero,
                 Email = dto.Email,
                 Telemovel = dto.Telemovel,
-                Morada = dto.Morada
+                Morada = dto.Morada,
+                //Password = "senha123",
             };
 
         }
@@ -68,6 +70,26 @@ namespace CLinicaXPTO.Services
 
         }
 
+        public async Task<UtenteNaoRegistadoDTO> Buscar_Email(string email)
+        {
+            var utente = await _repository.Buscar_Email(email);
+            if(utente != null)
+            {
+                var utenteNRdto = new UtenteNaoRegistadoDTO
+                {
+                    Id = utente.Id,
+                    NomeCompleto = utente.NomeCompleto,
+                    DataNascimento = utente.DataNascimento,
+                    Genero = utente.Genero,
+                    Telemovel = utente.Telemovel,
+                    Email = utente.Email,
+                    Morada = utente.Morada
+                };
+                return utenteNRdto;
+            }
+            return null;
+        }
+
         public async Task<List<UtenteNaoRegistadoDTO>> ListarTodos()
         {
             var lista = await _repository.ListarTodos();
@@ -82,6 +104,26 @@ namespace CLinicaXPTO.Services
                 Email = utente.Email,
                 Morada = utente.Morada
             }).ToList();
+        }
+
+        public async Task<UtenteNaoRegistadoDTO> Telemovel(string phone)
+        {
+            var utente = await _repository.Telemovel(phone);
+            if (utente != null)
+            {
+                var utenteNRdto = new UtenteNaoRegistadoDTO
+                {
+                    Id = utente.Id,
+                    NomeCompleto = utente.NomeCompleto,
+                    DataNascimento = utente.DataNascimento,
+                    Genero = utente.Genero,
+                    Telemovel = utente.Telemovel,
+                    Email = utente.Email,
+                    Morada = utente.Morada
+                };
+                return utenteNRdto;
+            }
+            return null;
         }
     }
 }

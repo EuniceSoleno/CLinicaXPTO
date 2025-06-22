@@ -91,8 +91,27 @@ namespace CLinicaXPTO.Services
             {
                 throw new Exception(ex.Message);
             }
-            
+        }
 
+        public async Task<ProfissionalDTO> BuscarProfissionalNome(string profissionalNome)
+        {
+            try
+            {
+                if (profissionalNome.Equals(string.Empty));
+                    throw new Exception($"Insira o nome do Profissional!");
+
+                var profissional = await _repository.BuscarProfissionalNome(profissionalNome);
+                if (profissional == null)
+                    return null;
+
+                return MapToDTO(profissional);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            throw new NotImplementedException();
         }
 
         public async Task<ProfissionalDTO> ElieminarProfissional(int idProficional)
@@ -161,5 +180,7 @@ namespace CLinicaXPTO.Services
             };
 
         }
+
+        
     }
 }

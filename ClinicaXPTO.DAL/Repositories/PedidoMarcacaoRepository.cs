@@ -42,15 +42,18 @@ namespace CLinicaXPTO.DAL.Repositories
         {
             try
             {
-                var marcacao = await BuscarMarcacao(idMarcacao);
-                if (marcacao != null)
-                {
-                    _dbContext.Pedidos.Remove(marcacao);
-                    await _dbContext.SaveChangesAsync();
-                    return true;
-                }
-            }
-            catch (Exception ex) { 
+                var marcacao = await _dbContext.Pedidos
+                .Include(p => p.ActosClinicos)
+                .FirstOrDefaultAsync(p => p.Id == idMarcacao);
+
+                if (marcacao == null) return false;
+
+                _dbContext.Actos.RemoveRange(marcacao.ActosClinicos);
+                _dbContext.Pedidos.Remove(marcacao);
+
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }catch (Exception ex) { 
                 throw new Exception($"Erro ao eliminar marcação no repositorio: {ex.Message}");
             }
             return false;

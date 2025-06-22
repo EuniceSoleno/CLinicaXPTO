@@ -27,6 +27,11 @@ namespace CLinicaXPTO.DAL.Repositories
 
         }
 
+        public async Task<UtenteNaoRegistado> Buscar_Email(string email)
+        {
+            return await _dbContext.utentesNaoRegistados.FirstAsync(x => x.Email == email);
+        }
+
         public async Task<List<UtenteNaoRegistado>> ListarTodos()
         {
             return await _dbContext.utentesNaoRegistados.ToListAsync();
@@ -35,6 +40,27 @@ namespace CLinicaXPTO.DAL.Repositories
         public async Task<UtenteNaoRegistado?> ObterPorUtenteNaoRegistado(int id)
         {
             return await _dbContext.utentesNaoRegistados.FindAsync(id);
+        }
+
+        public async Task<bool> RemoverPorId(int id)
+        {
+            var utente = ObterPorUtenteNaoRegistado(id);
+            if(utente == null)
+            {
+
+                return false;
+            }
+            else
+            {
+               _dbContext.Remove(utente);
+                return true;
+            }
+            
+        }
+
+        public async Task<UtenteNaoRegistado> Telemovel(string nome)
+        {
+            return await _dbContext.utentesNaoRegistados.FirstAsync();
         }
     }
 }

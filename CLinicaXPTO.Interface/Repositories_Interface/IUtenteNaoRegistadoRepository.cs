@@ -12,6 +12,9 @@ namespace CLinicaXPTO.Share.Repositories_Interface
         Task<UtenteNaoRegistado> AdicionarUtente(UtenteNaoRegistado utente);
         Task<UtenteNaoRegistado?> ObterPorUtenteNaoRegistado(int id);
         Task<List<UtenteNaoRegistado>> ListarTodos();
+        Task<bool> RemoverPorId(int id);
+        Task<UtenteNaoRegistado> Buscar_Email(string email);
+        Task<UtenteNaoRegistado> Telemovel(string nome);
 
     }
 }

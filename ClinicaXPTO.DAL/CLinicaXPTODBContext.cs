@@ -16,6 +16,8 @@ namespace ClinicaXPTO.DAL
 
         public DbSet<UtenteNaoRegistado>utentesNaoRegistados { get; set; }
 
+        public DbSet<TabelaDeHorario>horarios { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -28,6 +30,7 @@ namespace ClinicaXPTO.DAL
             modelBuilder.Entity<PedidoMarcacao>()
                 .Property(p => p.EstadoMarcacao)
                 .HasConversion<string>();
+                
 
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<ActoClinico>()
@@ -38,6 +41,15 @@ namespace ClinicaXPTO.DAL
             modelBuilder.Entity<ActoClinico>()
                 .Property(t => t._Subsistema)
                 .HasConversion<string>();
+
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<TabelaDeHorario>()
+                .Property(s => s.DiasSemana)
+                .HasConversion(
+                    v => string.Join(",", v),
+                    v => v.Split(",", StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => Enum.Parse <DayOfWeek>(s))
+                    .ToList());
 
         }
 
